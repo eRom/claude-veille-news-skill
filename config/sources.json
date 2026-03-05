@@ -1,0 +1,125 @@
+{
+  "sources": [
+    {
+      "id": "hackernews",
+      "name": "Hacker News",
+      "enabled": true,
+      "collector": "collectors/hackernews.py",
+      "method": "api",
+      "config": {},
+      "rate_limit": {
+        "requests_per_minute": 30,
+        "delay_between_ms": 200
+      }
+    },
+    {
+      "id": "rss",
+      "name": "RSS/Atom Feeds",
+      "enabled": true,
+      "collector": "collectors/rss.py",
+      "method": "rss",
+      "config": {
+        "feeds": [
+          {"url": "https://simonwillison.net/atom/entries/", "name": "Simon Willison"},
+          {"url": "https://lilianweng.github.io/index.xml", "name": "Lilian Weng"},
+          {"url": "https://hnrss.org/newest?q=LLM+OR+Agent+OR+AI", "name": "HN RSS AI"},
+          {"url": "https://github.blog/ai-and-ml/feed/", "name": "GitHub AI Blog"}
+        ]
+      },
+      "rate_limit": {
+        "requests_per_minute": 20,
+        "delay_between_ms": 500
+      }
+    },
+    {
+      "id": "reddit",
+      "name": "Reddit",
+      "enabled": true,
+      "collector": "collectors/reddit.py",
+      "method": "api",
+      "config": {
+        "subreddits": ["MachineLearning", "LocalLLaMA", "artificial", "ClaudeAI"],
+        "sort": "hot"
+      },
+      "rate_limit": {
+        "requests_per_minute": 10,
+        "delay_between_ms": 1000
+      }
+    },
+    {
+      "id": "github_trending",
+      "name": "GitHub Trending",
+      "enabled": true,
+      "collector": "collectors/github_trending.py",
+      "method": "api",
+      "config": {
+        "languages": ["python", "typescript", "rust"],
+        "since": "weekly"
+      },
+      "rate_limit": {
+        "requests_per_minute": 10,
+        "delay_between_ms": 1000
+      }
+    },
+    {
+      "id": "arxiv",
+      "name": "arXiv",
+      "enabled": true,
+      "collector": "collectors/arxiv.py",
+      "method": "api",
+      "config": {
+        "categories": ["cs.AI", "cs.CL", "cs.LG"],
+        "sort_by": "submittedDate",
+        "sort_order": "descending"
+      },
+      "rate_limit": {
+        "requests_per_minute": 5,
+        "delay_between_ms": 3000
+      }
+    },
+    {
+      "id": "youtube",
+      "name": "YouTube",
+      "enabled": false,
+      "collector": "collectors/youtube.py",
+      "method": "websearch",
+      "config": {
+        "channels": [],
+        "search_prefix": "site:youtube.com"
+      },
+      "rate_limit": {
+        "requests_per_minute": 5,
+        "delay_between_ms": 2000
+      }
+    },
+    {
+      "id": "twitter",
+      "name": "X / Twitter",
+      "enabled": false,
+      "collector": "collectors/twitter.py",
+      "method": "websearch",
+      "config": {
+        "accounts": [],
+        "search_prefix": "site:x.com OR site:twitter.com"
+      },
+      "rate_limit": {
+        "requests_per_minute": 5,
+        "delay_between_ms": 2000
+      }
+    },
+    {
+      "id": "producthunt",
+      "name": "Product Hunt",
+      "enabled": false,
+      "collector": "collectors/producthunt.py",
+      "method": "websearch",
+      "config": {
+        "search_prefix": "site:producthunt.com"
+      },
+      "rate_limit": {
+        "requests_per_minute": 5,
+        "delay_between_ms": 2000
+      }
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "user": {
+    "language": "fr",
+    "timezone": "Europe/Paris",
+    "profile": "Senior Architect & Web Dev"
+  },
+  "collection": {
+    "default_time_range": "7d",
+    "default_depth": "standard",
+    "max_articles_per_source": 20,
+    "max_articles_total": 100,
+    "dedup_similarity_threshold": 0.85
+  },
+  "scoring": {
+    "weights": {
+      "recency": 0.25,
+      "relevance": 0.35,
+      "engagement": 0.25,
+      "authority": 0.15
+    }
+  },
+  "notebooklm": {
+    "enabled": true,
+    "notebook_prefix": "WA",
+    "research_mode": "deep",
+    "auto_cleanup_days": 30,
+    "max_sources_per_notebook": 50
+  },
+  "output": {
+    "format": "markdown",
+    "save_path": "~/Documents/WhatAbout/reports",
+    "include_sources_list": true,
+    "include_metadata": false
+  }
+}

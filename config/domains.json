@@ -1,0 +1,30 @@
+{
+  "domains": [
+    {
+      "id": "llm-ai-agents",
+      "name": "LLM & AI Agents",
+      "keywords": {
+        "primary": ["LLM", "AI agent", "RAG", "fine-tuning", "Claude", "GPT", "Gemini", "AI coding"],
+        "secondary": ["prompt engineering", "vector database", "embeddings", "transformer", "MCP", "tool use", "function calling"],
+        "exclude": ["crypto", "NFT", "blockchain"]
+      },
+      "sources": ["hackernews", "rss", "reddit", "arxiv", "github_trending"],
+      "frequency": "daily",
+      "depth": "deep",
+      "nlm_notebook_alias": "veille-llm-agents"
+    },
+    {
+      "id": "frontend-webdev",
+      "name": "Frontend & Web Dev",
+      "keywords": {
+        "primary": ["React", "Next.js", "TypeScript", "Tailwind", "Vite", "Web Components"],
+        "secondary": ["SSR", "RSC", "server components", "edge runtime", "Bun", "Deno"],
+        "exclude": ["WordPress", "jQuery"]
+      },
+      "sources": ["hackernews", "rss", "reddit", "github_trending"],
+      "frequency": "weekly",
+      "depth": "standard",
+      "nlm_notebook_alias": "veille-frontend"
+    }
+  ]
+}
