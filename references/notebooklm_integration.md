@@ -86,13 +86,16 @@ MCP : `research_status`
 
 Poll toutes les 10s jusqu'a completion (timeout: 5 min).
 
-### Import des resultats
+### Import des resultats — OBLIGATOIRE
 ```bash
 nlm research import --notebook <id>
 ```
 MCP : `research_import`
 
-Les resultats sont ajoutes comme source dans le notebook.
+**IMPORTANT** : cet appel est OBLIGATOIRE apres la completion de la deep research.
+Sans lui, les sources decouvertes restent en attente et ne sont PAS integrees au notebook.
+Le `notebook_query` qui suit ne beneficiera pas des resultats de la deep research si cette
+etape est sautee. Toujours appeler `research_import` AVANT `notebook_query`.
 
 ## 5. Generation de rapports
 

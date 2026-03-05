@@ -15,6 +15,8 @@ from typing import Any
 
 import feedparser
 
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from collectors.base import Article, BaseCollector
 
 

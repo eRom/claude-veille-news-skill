@@ -10,6 +10,8 @@ import time
 from datetime import datetime, timezone
 from typing import Any
 
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from collectors.base import Article, BaseCollector
 
 HN_SEARCH_URL = "https://hn.algolia.com/api/v1/search"

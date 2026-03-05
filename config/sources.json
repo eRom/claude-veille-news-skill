@@ -1,6 +1,18 @@
 {
   "sources": [
     {
+      "id": "perplexity",
+      "name": "Perplexity Sonar Pro",
+      "enabled": true,
+      "collector": "collectors/perplexity.py",
+      "method": "api",
+      "config": {},
+      "rate_limit": {
+        "requests_per_minute": 10,
+        "delay_between_ms": 1000
+      }
+    },
+    {
       "id": "hackernews",
       "name": "Hacker News",
       "enabled": true,
@@ -80,12 +92,16 @@
     {
       "id": "youtube",
       "name": "YouTube",
-      "enabled": false,
+      "enabled": true,
       "collector": "collectors/youtube.py",
-      "method": "websearch",
+      "method": "api",
       "config": {
-        "channels": [],
-        "search_prefix": "site:youtube.com"
+        "channels": [
+          {"channel_id": "UCWN3xxRkmTPmbKwht9FuE5A", "name": "Siraj Raval"},
+          {"channel_id": "UCZHmQk67mSJgfCCTn7xBfew", "name": "Bycloud"},
+          {"channel_id": "UCbfYPyITQ-7l4upoX8nvctg", "name": "Two Minute Papers"},
+          {"channel_id": "UCXUPKJO5MZQN11PqgIvyuvQ", "name": "AI Explained"}
+        ]
       },
       "rate_limit": {
         "requests_per_minute": 5,
@@ -110,11 +126,11 @@
     {
       "id": "producthunt",
       "name": "Product Hunt",
-      "enabled": false,
+      "enabled": true,
       "collector": "collectors/producthunt.py",
-      "method": "websearch",
+      "method": "api",
       "config": {
-        "search_prefix": "site:producthunt.com"
+        "topics": ["artificial-intelligence", "developer-tools", "open-source", "productivity"]
       },
       "rate_limit": {
         "requests_per_minute": 5,
