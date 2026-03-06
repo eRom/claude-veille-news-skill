@@ -18,19 +18,16 @@ SKILL_ROOT = le repertoire racine de cette skill (la ou se trouve ce SKILL.md).
 A la reception d'une commande, extraire :
 
 - **SUJET** : le topic demande
-- **MODE** : veille | research | config | status
+- **MODE** : search | config | status
 - **TYPE_REQUETE** : TENDANCES | TECHNIQUE | GENERAL
 
 ### Detection du mode
 
 | Pattern de la commande | MODE |
 |------------------------|------|
-| `veille <domaine>` | veille |
-| `what about <sujet>` | research |
-| `research <question>` | research |
 | `config <action>` | config |
 | `status` | status |
-| Autre | research (defaut) |
+| Tout le reste | search (defaut) |
 
 ### Detection du type de requete
 
@@ -43,28 +40,25 @@ A la reception d'une commande, extraire :
 ### Affichage obligatoire AVANT toute action
 
 ```
-Je lance une {MODE} sur "{SUJET}" ({TYPE_REQUETE})...
+Je recherche "{SUJET}" ({TYPE_REQUETE})...
 ```
 
 ---
 
 ## 2. Execution du script
 
-### Mode veille ou research
+### Mode search
 
 Lance le script orchestrateur en FOREGROUND (attendre la fin) :
 
 ```bash
-python3 "${SKILL_ROOT}/scripts/whatabout.py" "${SUJET}" --emit=compact --time=${TIME} --depth=${DEPTH} --debug
+python3 "${SKILL_ROOT}/scripts/whatabout.py" "${SUJET}" --time=${TIME} --debug
 ```
 
 Parametres :
-- `--time` : `7d` (veille) ou `30d` (research), sauf si l'utilisateur precise
-- `--depth` : `quick` (24h), `standard` (7d), `deep` (30d)
-- `--mode=veille` : si domaine identifie dans domains.json
-- `--domain=ID` : si domaine connu
+- `--time` : `7d` par defaut, sauf si l'utilisateur precise explicitement une duree
+- `--domain=ID` : si domaine connu dans domains.json
 - `--sources=hn,rss` : si l'utilisateur filtre des sources
-- `--emit=compact` : toujours pour Claude
 
 IMPORTANT : Lire la TOTALITE de la sortie du script. Timeout 5 minutes.
 
@@ -132,7 +126,46 @@ Quelques pistes pour approfondir :
 
 ---
 
-## 5. Mode Expert / Suivi
+## 5. Sauvegarde du rapport
+
+Apres la synthese, creer le dossier et ecrire le fichier :
+
+```bash
+mkdir -p ~/Documents/WhatAbout/reports
+```
+
+Nom du fichier : `YYYY-MM-DD-{slug}.md` ou YYYY-MM-DD = date du jour et slug = sujet en minuscules, espaces remplacés par des tirets (ex: `2026-03-06-openai-chatgpt-5-4.md`).
+
+Contenu du fichier :
+
+```markdown
+# {SUJET} — {DATE}
+
+## Synthèse
+
+{La synthèse structurée produite a l'etape 4}
+
+---
+
+## Sources collectées
+
+{La sortie COMPLETE du script (compact) copiee-collee INTEGRALEMENT — TOUTES les sources, TOUS les articles sans exception (Reddit, GitHub, ProductHunt, arXiv, HN, RSS, YouTube, Perplexity...)}
+
+### Web supplementaire
+
+{Les URLs trouvees via WebSearch a l'etape 3}
+```
+
+IMPORTANT : Ne pas filtrer, ne pas abréger, ne pas sélectionner. Le nombre d'articles dans l'entete ("Articles : N") doit correspondre au nombre de liens effectivement listés.
+
+Apres ecriture, afficher sur une ligne :
+```
+Rapport sauvegarde : ~/Documents/WhatAbout/reports/{nom-du-fichier}.md ({N} articles)
+```
+
+---
+
+## 7. Mode Expert / Suivi
 
 Apres la synthese :
 
@@ -144,7 +177,7 @@ Apres la synthese :
 
 ---
 
-## 6. Mode Agent (--agent)
+## 8. Mode Agent (--agent)
 
 Si l'utilisateur invoque avec `--agent` ou dans un contexte de pipeline :
 
@@ -156,17 +189,86 @@ Si l'utilisateur invoque avec `--agent` ou dans un contexte de pipeline :
 
 ---
 
-## 7. NotebookLM (desactive par defaut)
+## 9. NotebookLM (desactive par defaut, flag --nlm)
 
-NotebookLM est disponible mais desactive du flow principal pour le moment.
-Pour reactiver, ajouter `--nlm` a la commande.
+Desactive par defaut. Ajouter `--nlm` a la commande pour activer.
 
-Si `--nlm` est passe :
-1. Creer un notebook NLM avec le sujet
-2. Injecter les top articles comme sources (URLs)
-3. Lancer Deep Research
-4. OBLIGATOIRE : `research_import` apres completion
-5. `notebook_query` pour la synthese enrichie
-6. Proposer podcast/mind_map/report en extras
+### Pre-requis
 
-Voir `references/notebooklm_integration.md` pour le workflow complet.
+Avant tout, verifier que les outils MCP NotebookLM sont disponibles :
+- Tenter un appel `notebook_list` (ou equivalent)
+- Si erreur ou outil indisponible : afficher "NotebookLM non disponible — skip." et continuer sans NLM
+- Ne PAS bloquer le flow principal
+
+### Etapes si `--nlm` et outils disponibles
+
+Les etapes NLM s'executent APRES la sauvegarde du rapport (etape 5).
+
+#### 9.1 Creer le notebook
+
+Nom : `YYYY-MM-DD — {SUJET}` (meme format que le rapport)
+
+#### 9.2 Ajouter les sources (URLs)
+
+Selectionner les URLs du rapport final avec ces regles :
+- EXCLURE les URLs Reddit (reddit.com) et Hacker News (news.ycombinator.com)
+- Trier les articles restants par score decroissant
+- Prendre les top 50 maximum (limite NLM)
+- Ajouter chaque URL via `source_add(source_type=url, url=...)`
+
+#### 9.3 Ajouter le prompt Deep Research
+
+Generer un prompt de deep research et l'ajouter comme source texte :
+
+```
+source_add(source_type=text, text=<contenu du prompt>)
+```
+
+Le prompt doit contenir :
+- Le sujet de recherche
+- Le contexte : resume des points cles identifies pendant la collecte
+- 3-5 questions/angles a explorer, bases sur les resultats collectes
+- Le ton : directif, concis, orienté analyse
+
+Exemple de structure :
+```markdown
+# Deep Research : {SUJET}
+
+## Contexte
+{Resume en 3-5 lignes des points cles de la collecte}
+
+## Questions a explorer
+1. {Angle 1 issu des resultats — ex: comparaison, impact, adoption}
+2. {Angle 2}
+3. {Angle 3}
+
+## Consignes
+- Privilegier les sources primaires (blogs officiels, papers, docs)
+- Identifier les signaux faibles et tendances emergentes
+- Croiser les perspectives (technique, business, communaute)
+```
+
+Renommer cette source en "Deep Research Prompt" dans le notebook.
+
+#### 9.4 Ne PAS lancer le Deep Research
+
+Le notebook est pret, l'utilisateur lancera le Deep Research manuellement quand il le souhaite.
+
+### Affichage et rapport
+
+Ajouter au resume affiche :
+```
+NotebookLM : notebook cree ({N} sources ajoutees) + prompt Deep Research
+```
+
+Ajouter a la fin du fichier rapport (etape 5) :
+```markdown
+
+---
+
+## NotebookLM
+
+- **Notebook** : {nom du notebook}
+- **Sources** : {N} URLs ajoutees (top par score, hors Reddit/HN)
+- **Deep Research** : prompt genere et ajoute comme source texte — lancer manuellement dans NLM
+```

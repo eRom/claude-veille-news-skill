@@ -9,14 +9,14 @@ Agregation parallele de plusieurs sources (Perplexity Sonar Pro, Hacker News, RS
 ## Utilisation rapide
 
 ```bash
-# Veille sur un domaine connu (defini dans domains.json)
-/what-about veille llm-ai-agents
+# Recherche sur un sujet
+/what-about LLM Agents
 
-# Recherche ad-hoc sur un sujet libre
-/what-about nano banana pro prompting
+# Avec une fenetre temporelle
+/what-about OpenAI ChatGPT 5.4 --time=30d
 
-# Options avancees
-/what-about veille frontend-webdev --time=24h --depth=quick
+# Avec NotebookLM
+/what-about Claude Code MCP --nlm
 ```
 
 ## Comment ca marche
@@ -51,13 +51,16 @@ Agregation parallele de plusieurs sources (Perplexity Sonar Pro, Hacker News, RS
        |   2. Score      -->  relevance + recency + engagement + authority
        |   3. Dedupe     -->  Jaccard similarity (seuil: 0.85)
        |   4. Cross-link -->  Detection cross-source (seuil: 0.4)
-       |   5. Render     -->  compact | json | md
+       |   5. Render     -->  compact
        |
        v
    Claude synthetise + WebSearch complement
        |
        v
-   Rapport structure pour l'utilisateur
+   Rapport sauvegarde (~/Documents/WhatAbout/reports/YYYY-MM-DD-sujet.md)
+       |
+       v (si --nlm)
+   NotebookLM : notebook + sources + prompt Deep Research
 ```
 
 ### Collecteurs
@@ -86,10 +89,18 @@ Les articles sont scores sur 100 points avec 4 criteres ponderes :
 | Engagement | 0.25 | Points, commentaires |
 | Authority | 0.15 | Reputation de la source |
 
-### Modes
+### Options
 
-- **Veille** : domaine connu (defini dans `config/domains.json`), keywords pre-configures, collecte ciblee
-- **Research** : sujet libre, extraction automatique des keywords, collecte large
+| Option | Valeurs | Defaut | Description |
+|--------|---------|--------|-------------|
+| `--time` | `24h`, `7d`, `30d` | `7d` | Fenetre temporelle de collecte |
+| `--domain` | ID depuis `domains.json` | auto | Force un domaine pre-configure |
+| `--sources` | `hn,rss,reddit,...` | toutes | Filtrer les sources |
+| `--max` | `N` | 100 | Limite articles total |
+| `--nlm` | flag | off | Active NotebookLM |
+| `--debug` | flag | off | Logs verbose |
+
+Si le sujet correspond a un domaine connu (`config/domains.json`), les keywords pre-configures sont utilises automatiquement. Sinon, les keywords sont extraits du sujet.
 
 ## Structure du projet
 
@@ -180,14 +191,23 @@ Les domaines de veille se configurent dans `config/domains.json` :
 
 Les sources se gerent dans `config/sources.json` (activer/desactiver, rate limits, feeds RSS...).
 
-## NotebookLM (optionnel)
+## Rapport de sortie
 
-Avec le flag `--nlm`, la skill peut envoyer les resultats dans Google NotebookLM pour :
-- Deep Research automatique
-- Generation de podcasts
-- Mind maps et rapports enrichis
+Chaque recherche genere un fichier markdown dans `~/Documents/WhatAbout/reports/` :
 
-Voir `references/notebooklm_integration.md` pour le workflow complet.
+```
+~/Documents/WhatAbout/reports/2026-03-06-openai-chatgpt-5-4.md
+```
+
+Le rapport contient la synthese structuree + toutes les URLs collectees par source.
+
+## NotebookLM (optionnel, --nlm)
+
+Avec le flag `--nlm`, la skill cree un notebook Google NotebookLM :
+- Notebook nomme `YYYY-MM-DD — {sujet}`
+- Top 50 URLs par score (hors Reddit/HN) ajoutees comme sources
+- Prompt Deep Research genere et ajoute comme source texte
+- L'utilisateur lance le Deep Research manuellement dans NLM
 
 ## Licence
 

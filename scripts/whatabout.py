@@ -5,12 +5,10 @@ Usage:
     python3 scripts/whatabout.py "topic ou domaine" [options]
 
 Options:
-    --mode=veille|research    Auto-detecte si omis
     --domain=ID               ID domaine depuis domains.json
-    --time=24h|7d|30d         Default: 7d (veille), 30d (research)
+    --time=24h|7d|30d         Default: 7d
     --sources=hn,rss          Filtre sources (default: toutes actives)
-    --depth=quick|standard|deep
-    --emit=compact|json|md    Default: compact
+    --depth=quick|standard|deep  Default: deep
     --max=N                   Max articles total
     --agent                   Mode agent (pas d'output interactif)
     --debug                   Logs verbose sur stderr
@@ -89,13 +87,6 @@ def find_domain(topic: str, domains_config: dict) -> dict | None:
             return d
 
     return None
-
-
-def detect_mode(topic: str, domain: dict | None) -> str:
-    """Auto-detection du mode : veille si domaine connu, research sinon."""
-    if domain is not None:
-        return "veille"
-    return "research"
 
 
 def extract_keywords(topic: str) -> dict:
@@ -262,11 +253,10 @@ def build_report(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="What About — Orchestrateur de veille")
     parser.add_argument("topic", help="Sujet ou domaine de recherche")
-    parser.add_argument("--mode", choices=["veille", "research"], default=None)
     parser.add_argument("--domain", default=None, help="ID domaine depuis domains.json")
     parser.add_argument("--time", default=None, help="Periode (24h, 7d, 30d)")
     parser.add_argument("--sources", default=None, help="Sources filtrees (ex: hn,rss)")
-    parser.add_argument("--depth", choices=["quick", "standard", "deep"], default="standard")
+    parser.add_argument("--depth", choices=["quick", "standard", "deep"], default="deep")
     parser.add_argument("--emit", choices=["compact", "json", "md"], default="compact")
     parser.add_argument("--max", type=int, default=None, help="Max articles total")
     parser.add_argument("--agent", action="store_true", help="Mode agent")
@@ -288,9 +278,6 @@ def main() -> None:
     else:
         domain = find_domain(args.topic, config["domains"])
 
-    # Determiner le mode
-    mode = args.mode or detect_mode(args.topic, domain)
-
     # Keywords
     if domain:
         keywords = domain["keywords"]
@@ -300,12 +287,7 @@ def main() -> None:
         keyword_list = keywords.get("primary", [])
 
     # Time range
-    if args.time:
-        time_range = args.time
-    elif mode == "veille":
-        time_range = collection_settings.get("default_time_range", "7d")
-    else:
-        time_range = "30d"
+    time_range = args.time or collection_settings.get("default_time_range", "7d")
 
     # Max articles par source
     max_per_source = args.max or collection_settings.get("max_articles_per_source", 20)
@@ -315,7 +297,7 @@ def main() -> None:
     if args.sources:
         source_filter = [s.strip() for s in args.sources.split(",")]
 
-    debug_log(f"Mode: {mode} | Topic: {args.topic} | Time: {time_range} | Keywords: {keyword_list}", args.debug)
+    debug_log(f"Topic: {args.topic} | Time: {time_range} | Keywords: {keyword_list}", args.debug)
 
     # Decouvrir collecteurs
     available = discover_collectors(source_filter, config["sources"], ROOT_DIR)
@@ -362,8 +344,9 @@ def main() -> None:
     collected_at = datetime.now(timezone.utc).isoformat()
     topic_display = domain["name"] if domain else args.topic
     domain_id = domain["id"] if domain else None
+    query_type = "domain" if domain else "topic"
 
-    report = build_report(topic_display, mode, domain_id, time_range, all_articles, collected_at)
+    report = build_report(topic_display, query_type, domain_id, time_range, all_articles, collected_at)
     output = render(report, args.emit)
 
     print(output)
