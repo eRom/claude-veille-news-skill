@@ -57,7 +57,7 @@ Agregation parallele de plusieurs sources (Perplexity Sonar Pro, Hacker News, RS
    Claude synthetise + WebSearch complement
        |
        v
-   Rapport sauvegarde (~/Documents/WhatAbout/reports/YYYY-MM-DD-sujet.md)
+   Rapport sauvegarde (.what-about/reports/YYYY-MM-DD-sujet.md)
        |
        v (si --nlm)
    NotebookLM : notebook + sources + prompt Deep Research
@@ -101,6 +101,16 @@ Les articles sont scores sur 100 points avec 4 criteres ponderes :
 | `--debug` | flag | off | Logs verbose |
 
 Si le sujet correspond a un domaine connu (`config/domains.json`), les keywords pre-configures sont utilises automatiquement. Sinon, les keywords sont extraits du sujet.
+
+### Commandes utilitaires
+
+| Commande | Description |
+|----------|-------------|
+| `/what-about config show` | Afficher les settings |
+| `/what-about config sources` | Lister les sources actives |
+| `/what-about config domains` | Lister les domaines pre-configures |
+| `/what-about status` | Etat des sources actives/inactives |
+| `/what-about history` | Lister les rapports sauvegardes |
 
 ## Structure du projet
 
@@ -193,10 +203,10 @@ Les sources se gerent dans `config/sources.json` (activer/desactiver, rate limit
 
 ## Rapport de sortie
 
-Chaque recherche genere un fichier markdown dans `~/Documents/WhatAbout/reports/` :
+Chaque recherche genere un fichier markdown dans `.what-about/reports/` :
 
 ```
-~/Documents/WhatAbout/reports/2026-03-06-openai-chatgpt-5-4.md
+.what-about/reports/2026-03-06-openai-chatgpt-5-4.md
 ```
 
 Le rapport contient la synthese structuree + toutes les URLs collectees par source.

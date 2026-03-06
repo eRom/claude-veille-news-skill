@@ -18,7 +18,7 @@ SKILL_ROOT = le repertoire racine de cette skill (la ou se trouve ce SKILL.md).
 A la reception d'une commande, extraire :
 
 - **SUJET** : le topic demande
-- **MODE** : search | config | status
+- **MODE** : search | config | status | history
 - **TYPE_REQUETE** : TENDANCES | TECHNIQUE | GENERAL
 
 ### Detection du mode
@@ -27,6 +27,7 @@ A la reception d'une commande, extraire :
 |------------------------|------|
 | `config <action>` | config |
 | `status` | status |
+| `history` ou `historique` | history |
 | Tout le reste | search (defaut) |
 
 ### Detection du type de requete
@@ -75,6 +76,29 @@ Lire et afficher les fichiers de config selon la sous-commande :
 ### Mode status
 
 Lire sources.json et afficher un resume des sources actives/inactives.
+
+### Mode history
+
+Lister les rapports existants dans `.what-about/reports/` :
+
+```bash
+ls -1 .what-about/reports/*.md 2>/dev/null
+```
+
+Afficher un tableau avec :
+- Date (extraite du nom de fichier YYYY-MM-DD)
+- Sujet (extrait du slug apres la date)
+- Taille du fichier
+
+Format :
+```
+| Date       | Sujet                  | Taille |
+|------------|------------------------|--------|
+| 2026-03-06 | openai-chatgpt-5-4     | 4.2 KB |
+| 2026-03-05 | llm-agents             | 3.8 KB |
+```
+
+Si le dossier est vide ou n'existe pas : "Aucun rapport trouve."
 
 ---
 
@@ -131,7 +155,7 @@ Quelques pistes pour approfondir :
 Apres la synthese, creer le dossier et ecrire le fichier :
 
 ```bash
-mkdir -p ~/Documents/WhatAbout/reports
+mkdir -p .what-about/reports
 ```
 
 Nom du fichier : `YYYY-MM-DD-{slug}.md` ou YYYY-MM-DD = date du jour et slug = sujet en minuscules, espaces remplacés par des tirets (ex: `2026-03-06-openai-chatgpt-5-4.md`).
@@ -160,7 +184,7 @@ IMPORTANT : Ne pas filtrer, ne pas abréger, ne pas sélectionner. Le nombre d'a
 
 Apres ecriture, afficher sur une ligne :
 ```
-Rapport sauvegarde : ~/Documents/WhatAbout/reports/{nom-du-fichier}.md ({N} articles)
+Rapport sauvegarde : .what-about/reports/{nom-du-fichier}.md ({N} articles)
 ```
 
 ---

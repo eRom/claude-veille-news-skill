@@ -109,21 +109,6 @@
       }
     },
     {
-      "id": "twitter",
-      "name": "X / Twitter",
-      "enabled": false,
-      "collector": "collectors/twitter.py",
-      "method": "websearch",
-      "config": {
-        "accounts": [],
-        "search_prefix": "site:x.com OR site:twitter.com"
-      },
-      "rate_limit": {
-        "requests_per_minute": 5,
-        "delay_between_ms": 2000
-      }
-    },
-    {
       "id": "producthunt",
       "name": "Product Hunt",
       "enabled": true,

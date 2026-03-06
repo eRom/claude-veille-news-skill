@@ -89,11 +89,42 @@ def find_domain(topic: str, domains_config: dict) -> dict | None:
 
 
 def extract_keywords(topic: str) -> dict:
-    """Extrait des keywords depuis un sujet libre (mode research)."""
+    """Extrait des keywords intelligents depuis un sujet libre.
+
+    Regle:
+    - Garde le sujet complet comme premier keyword (recherche exacte)
+    - Detecte les entites composees (nom + version: "ChatGPT 5.4")
+    - Les mots individuels vont en secondary pour elargir la recherche
+    """
+    import re
+
     words = topic.split()
+    primary = [topic]  # sujet complet en premier
+
+    # Detecter les tokens version (mot + numero): "ChatGPT 5.4", "GPT-5.4", "React 19"
+    i = 0
+    entities = []
+    while i < len(words):
+        word = words[i]
+        # Si le mot suivant ressemble a un numero de version
+        if i + 1 < len(words) and re.match(r"^\d+[\d.]*$", words[i + 1]):
+            entities.append(f"{word} {words[i + 1]}")
+            i += 2
+        else:
+            entities.append(word)
+            i += 1
+
+    # Primary: sujet complet + entites composees (> 1 mot)
+    for e in entities:
+        if " " in e and e != topic:
+            primary.append(e)
+
+    # Secondary: mots individuels (sauf stop words courts et numeros seuls)
+    secondary = [w for w in words if len(w) > 2 and not re.match(r"^\d+[\d.]*$", w) and w not in primary]
+
     return {
-        "primary": words,
-        "secondary": [],
+        "primary": primary,
+        "secondary": secondary,
         "exclude": [],
     }
 

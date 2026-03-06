@@ -28,7 +28,7 @@
   },
   "output": {
     "format": "markdown",
-    "save_path": "~/Documents/WhatAbout/reports",
+    "save_path": ".what-about/reports",
     "include_sources_list": true,
     "include_metadata": false
   }
