@@ -4,6 +4,8 @@ Skill Claude Code pour la veille technologique multi-sources.
 
 Agregation parallele de plusieurs sources (Perplexity Sonar Pro, Hacker News, RSS), scoring intelligent, deduplication, et synthese structuree — le tout pilote depuis Claude Code avec `/what-about`.
 
+[Présentation vidéo](https://video.romain-ecarnot.com/opensource/WhatAboutVideo.mp4)
+
 ![Architecture](architecture.png)
 
 ## Utilisation rapide
