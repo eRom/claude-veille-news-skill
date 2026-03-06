@@ -10,7 +10,6 @@ Options:
     --sources=hn,rss          Filtre sources (default: toutes actives)
     --depth=quick|standard|deep  Default: deep
     --max=N                   Max articles total
-    --agent                   Mode agent (pas d'output interactif)
     --debug                   Logs verbose sur stderr
 """
 
@@ -259,7 +258,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--depth", choices=["quick", "standard", "deep"], default="deep")
     parser.add_argument("--emit", choices=["compact", "json", "md"], default="compact")
     parser.add_argument("--max", type=int, default=None, help="Max articles total")
-    parser.add_argument("--agent", action="store_true", help="Mode agent")
     parser.add_argument("--debug", action="store_true", help="Logs verbose sur stderr")
     return parser.parse_args()
 

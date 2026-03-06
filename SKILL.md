@@ -177,19 +177,7 @@ Apres la synthese :
 
 ---
 
-## 8. Mode Agent (--agent)
-
-Si l'utilisateur invoque avec `--agent` ou dans un contexte de pipeline :
-
-- Skip l'intro "Je lance une..."
-- Skip WebSearch supplementaire
-- Skip suivi interactif
-- Output : rapport du script (compact) + stats, puis STOP
-- Ne pas proposer de pistes
-
----
-
-## 9. NotebookLM (desactive par defaut, flag --nlm)
+## 8. NotebookLM (desactive par defaut, flag --nlm)
 
 Desactive par defaut. Ajouter `--nlm` a la commande pour activer.
 
